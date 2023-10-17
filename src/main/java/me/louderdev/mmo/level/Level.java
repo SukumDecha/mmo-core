@@ -1,34 +1,32 @@
 package me.louderdev.mmo.level;
 
-import dev.lone.itemsadder.api.CustomBlock;
-import dev.lone.itemsadder.api.CustomStack;
 import lombok.Getter;
 import lombok.Setter;
 import me.louderdev.mmo.MmoCore;
 import me.louderdev.mmo.utils.Msg;
+import me.louderdev.mmo.utils.ServerUtil;
+import me.louderdev.mmo.utils.TaskUtils;
 import me.louderdev.mmo.utils.file.ConfigFile;
-import org.bukkit.Material;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
 public class Level {
 
-    private double currentLevel, currentXP, currentMaxXP, minXP, maxXP; //min-max exps
-    private String displayName, keyName; //Name of this type of levels;
-    private StartMaterial startMaterial; //Material to use when start counting level
+    private int currentLevel, currentXP, currentMaxXP, minGainXP, maxGainXP; //min-max exps
+    private String displayName, keyName, beginItem; //Name of this type of levels;
+    private Sound soundFail;
     private ActionType actionType; //Action type of this level
-
     private List<LevelProps> levelProps; //levelProps
-    @Getter private static List<Level> allLevels = new ArrayList<>();
+    @Getter private static List<Level> allLevels = new ArrayList<>();;
 
     public Level(String keyName, FileConfiguration configuration) {
         this.keyName = keyName;
@@ -38,18 +36,21 @@ public class Level {
     }
 
     public Level(String otherKeyName) {
-        Optional<Level> optionalLevel = getByKeyName(otherKeyName);
+        Level others = getByKeyName(otherKeyName);
 
-        if (optionalLevel.isPresent()) {
-            Level others = optionalLevel.get();
+        if (others != null) {
 
             this.keyName = others.getKeyName();
             this.displayName = others.getDisplayName();
-            this.startMaterial = others.getStartMaterial();
+            this.soundFail = others.getSoundFail();
+            this.beginItem = others.getBeginItem();
             this.actionType = others.getActionType();
 
-            this.minXP = others.getMinXP();
-            this.maxXP = others.getMaxXP();
+            this.minGainXP = others.getMinGainXP();
+            this.maxGainXP = others.getMaxGainXP();
+
+            this.currentLevel = 1;
+            this.currentMaxXP = 20;
 
             this.levelProps = others.getLevelProps();
         } else {
@@ -60,71 +61,65 @@ public class Level {
 
     public static void init() {
         ConfigFile config = MmoCore.getInstance().getConfigFile();;
-
         ConfigurationSection section = config.getConfigurationSection("MMOCORE");
 
+        allLevels = new ArrayList<>();
+
         for(String key : section.getKeys(false)) {
-            new Level(key, config);
+            System.out.println("WKWKWKWK: " + key);
+
+            Level toAdd = new Level(key, config);
+            allLevels.add(toAdd);
         }
 
     }
 
     private void load(FileConfiguration c) {
+        System.out.println("Loading " + keyName);
         ConfigurationSection section = c.getConfigurationSection("MMOCORE." + keyName);
 
+
         this.displayName = section.getString("DISPLAY_NAME");
+        this.beginItem = section.getString("BEGIN_CUSTOM_ITEM");
         this.actionType = ActionType.valueOf(section.getString("TYPE"));
-
-        //Set startMaterial section
-        if(c.contains("ITEM")) {
-            ConfigurationSection itemSection = section.getConfigurationSection("ITEM");
-            StartMaterial startMaterial = new StartMaterial(itemSection.getBoolean("USE_CUSTOM_ITEM"));
-
-            if(startMaterial.isCustom()) {
-                switch (actionType) {
-                    case MINING: {
-                        startMaterial.setCustomBlock(CustomBlock.getInstance(
-                                itemSection.getString("CUSTOM_ITEM")
-                        ));
-                        break;
-                    }
-                    default:{
-                        startMaterial.setCustomStack(CustomStack.getInstance(
-                                itemSection.getString("CUSTOM_ITEM")
-                        ));
-                    }
-                }
-            } else {
-                ConfigurationSection defaultStack = itemSection.getConfigurationSection("DEFAULT_ITEM");
-                ItemStack toReturn = new ItemStack(Material.valueOf(defaultStack.getString(
-                        "TYPE"
-                )), 1);
-                toReturn.setDurability((byte) defaultStack.getInt("DATA"));
-
-                startMaterial.setItemStack(toReturn);
-            }
+        this.soundFail = Sound.valueOf(section.getString("SOUND_FAIL"));
+        /*
+        switch (actionType) {
+            case MINING:
+                Bukkit.broadcastMessage("Doing this ");
+                this.startMaterial = new StartMaterial(CustomBlock.getInstance(section.getString("BEGIN_CUSTOM_ITEM")));
+                break;
+            default:
+                Bukkit.broadcastMessage("Doing that ");
+                this.startMaterial = new StartMaterial(CustomStack.getInstance(section.getString("BEGIN_CUSTOM_ITEM")));
+                break;
         }
+         */
 
         //Set min-max exp section
-        if(c.contains("EXP")) {
-            ConfigurationSection expSection = section.getConfigurationSection("EXP");
-            this.minXP = expSection.getDouble("MIN");
-            this.maxXP = expSection.getDouble("MAX");
+        if(section.contains("EXP_GAIN")) {
+            ConfigurationSection expSection = section.getConfigurationSection("EXP_GAIN");
+            this.minGainXP = expSection.getInt("MIN");
+            this.maxGainXP = expSection.getInt("MAX");
         }
 
         ConfigurationSection requiresSection = section.getConfigurationSection("REQUIREMENT");
 
         if (section.contains("REQUIREMENT")) {
             for (String key : requiresSection.getKeys(false)) {
-                ConfigurationSection requireSection = requiresSection.getConfigurationSection(key);
+                Bukkit.getConsoleSender().sendMessage("key: " + key);
 
-                getLevelProps().add(new LevelProps(requireSection.getInt("LEVEL"),
-                        requireSection.getString("ITEM__ALLOWED"), actionType));
+                ConfigurationSection requireSection = requiresSection.getConfigurationSection(key);
+                Bukkit.getConsoleSender().sendMessage("Level: " + requireSection.getInt("LEVEL"));
+                Bukkit.getConsoleSender().sendMessage("ITEM_ALLOWED: " + requireSection.getInt("ITEM_ALLOWED"));
+
+                levelProps.add(new LevelProps(requireSection.getInt("LEVEL"),
+                        requireSection.getString("ITEM_ALLOWED"), requireSection.getStringList("CMDS").stream().toList()));
             }
         }
 
-        //Add this level into all level;
-        allLevels.add(this);
+        System.out.println("Done loading:");
+        System.out.println(this);
     }
 
     private void save() {
@@ -135,36 +130,37 @@ public class Level {
 
             levelSection.set("DISPLAY_NAME", level.getDisplayName());
             levelSection.set("TYPE", level.getActionType().name());
+            levelSection.set("SOUND_FAIL", level.getSoundFail().name());
+            levelSection.set("BEGIN_CUSTOM_ITEM", level.getBeginItem());
 
+            /*
             ConfigurationSection itemSection = levelSection.createSection("ITEM");
-            itemSection.set("USE_CUSTOM_ITEM", startMaterial.isCustom());
-            if(startMaterial.isCustom()) {
-                switch (actionType) {
-                    case MINING: {
-                        itemSection.set("CUSTOM_ITEM", startMaterial.getCustomBlock().getNamespacedID());
-                         break;
-                    }
-                    default: {
-                        itemSection.set("CUSTOM_ITEM", startMaterial.getCustomStack().getNamespacedID());
-                    }
+            switch (actionType) {
+                case MINING: {
+                    itemSection.set("CUSTOM_ITEM", startMaterial.getCustomBlock().getNamespacedID());
+                    break;
                 }
-            } else {
-                ConfigurationSection defaultSection = itemSection.createSection("DEFAULT_ITEM");
-                defaultSection.set("TYPE", startMaterial.getItemStack().getType().name());
-                defaultSection.set("DATA", startMaterial.getItemStack().getDurability());
+                default: {
+                    itemSection.set("CUSTOM_ITEM", startMaterial.getCustomStack().getNamespacedID());
+                }
             }
 
+             */
+
             ConfigurationSection expSection = levelSection.createSection("EXP_GAIN");
-            expSection.set("MIN", level.getMinXP());
-            expSection.set("MAX", level.getMaxXP());
+            expSection.set("MIN", level.getMinGainXP());
+            expSection.set("MAX", level.getMaxGainXP());
 
             ConfigurationSection requiresSection = levelSection.createSection("REQUIREMENT");
             for (int i = 0; i < level.getLevelProps().size(); i++) {
+                Bukkit.getConsoleSender().sendMessage("I: " + i);
+
                 LevelProps props = level.getLevelProps().get(i);
 
                 ConfigurationSection requireSection = requiresSection.createSection(String.valueOf(i));
+
                 requireSection.set("LEVEL", props);
-                requireSection.set("ITEM_ALLOWED", props.getAllowedItem().getNamespacedID());
+                requireSection.set("ITEM_ALLOWED", props.getAllowedAsString());
             }
         }
     }
@@ -175,33 +171,86 @@ public class Level {
     }
 
     public void handleAddExp(Player player) {
-        double receivedXP = ThreadLocalRandom.current().nextDouble(minXP, maxXP);
+        int receivedXP = ThreadLocalRandom.current().nextInt(minGainXP, maxGainXP + 10);
+
         this.currentXP += receivedXP;
 
-        Msg.EARN_XP.sendMessage(player, receivedXP, getActionType().getName(),
-                getCurrentXP(), getCurrentMaxXP());
-
-        handleCheckExp(player);
-    }
-
-    public void handleCheckExp(Player player) {
-        if(currentXP >= currentMaxXP) {
-            currentXP -= currentMaxXP;
-            double nextLevel = currentLevel + 1;
-            Msg.EARN_XP.sendMessage( player, getActionType().getName(),
-                    currentLevel++, nextLevel);
+        //If not level up we gonna send receive xp message;
+        if(!hasLevelUp(player)) {
+            Msg.EARN_XP.sendMessage(player, new Object[]{ "", receivedXP , displayName,
+                    currentXP, currentMaxXP, currentLevel});
         }
-        handleCheckExp(player);
     }
 
-    public Optional getByKeyName(String keyName) {
+    public boolean hasLevelUp(Player player) {
+        if(currentXP >= currentMaxXP) {
+            while (currentXP >=  currentMaxXP) {
+                int newMaxXP = ThreadLocalRandom.current().nextInt(currentMaxXP, currentMaxXP + (currentLevel * 100));
+
+                currentXP = currentXP - currentMaxXP;
+                currentMaxXP = newMaxXP;
+
+                handleLevelUp(player);
+                Msg.LEVEL_UP.sendMessage(player, new Object[]{
+                        "",
+                        getActionType().getName(),
+                        currentLevel, ++currentLevel
+                });
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public void handleLevelUp(Player player) {;
+        for(LevelProps props : levelProps) {
+            if(props.getRequiredLevel() == (currentLevel + 1) && props.getCmds().size() > 0) {
+                TaskUtils.run(() -> {
+                    for(String cmd : props.getCmds()) {
+                        cmd = cmd.replace("%player%", player.getName());
+                        cmd = cmd.replace("%level%", currentLevel + "");
+                        ServerUtil.executeCommand(cmd);
+                    }
+                });
+            }
+        }
+    }
+
+    public Level getByKeyName(String keyName) {
         for(Level level : allLevels) {
-            if(level.getKeyName().equals(keyName)) {
-                return Optional.of(level);
+            if(level.getKeyName().equalsIgnoreCase(keyName)) {
+                return level;
             }
         }
 
-        return Optional.of(null);
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Level{" +
+                "minXP=" + minGainXP +
+                ", maxXP=" + maxGainXP +
+                ", displayName='" + displayName + '\'' +
+                ", keyName='" + keyName + '\'' +
+                ", beginItem=" + beginItem +
+                ", actionType=" + actionType +
+                ", levelProps=" + levelProps +
+                '}';
+    }
+
+    public String coloredToString() {
+        return new StringBuilder("&2Name: &b").append(displayName).append("\n")
+                .append("  &eEXP Gain: \n").append("    &eminXP: ").append(minGainXP).append("\n")
+                .append("    &emaxXP: ").append(maxGainXP).append("\n")
+                .append("  &6Begin Item: &e").append(beginItem).append("\n")
+                .append("  &2Action: &a").append(actionType.getName()).append("\n")
+                .append("  &5Level: &r\n")
+                .append("    &5current Level: &d").append(currentLevel)
+                .append("    &5current XP: &d").append(currentXP)
+                .append("    &5current MaxXP: &d").append(currentMaxXP)
+                .toString();
     }
 
 }

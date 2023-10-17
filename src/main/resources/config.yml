@@ -1,21 +1,95 @@
 MMOCORE:
-  WHEAT_LEVEL: #Used as level name on data
-    DISPLAY_NAME: 'ปลูกข้าว'
-    ITEM:
-      USE_CUSTOM_ITEM: TRUE
-      CUSTOM_ITEM: 'CUSTOM_WHEAT' #Level up by plating custom wheat
-      DEFAULT_ITEM:
-        TYPE: "WHEAT"
-        DATA: 0
-    TYPE: 'PLATING'
-    CURRENT_LEVEL: 1
+  RUBY_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ขุด Ruby"
+    TYPE: "MINING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:ruby_block"
     EXP_GAIN:
       MIN: 10
       MAX: 20
     REQUIREMENT:
       1:
-        LEVEL: 10 #required level to use this items
-        ITEM_ALLOWED: "CUSTOM_CANE" #must be seed if it plant
+        LEVEL: 10
+        ITEM_ALLOWED: "iasurvival:crystal_block"
       2:
-        LEVEL: 20 #required level to use this items
-        ITEM_ALLOWED: "CUSTOM_PUMPKIN" #field for custom items (must be seed if it is plant)
+        LEVEL: 20
+        ITEM_ALLOWED: "spinel_block"
+  TURQUOISE_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ขุด Turquoise"
+    TYPE: "MINING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:turquoise_ore"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 10
+        ITEM_ALLOWED: "iasurvival:cassiterite_ore"
+      2:
+        LEVEL: 20
+        ITEM_ALLOWED: "iasurvival:dark_amethyst_ore"
+  TOMATO_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ปลูก Tomato"
+    TYPE: "PLANTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:tomato_seeds"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 3
+        ITEM_ALLOWED: "iasurvival:garlic_seeds"
+      2:
+        LEVEL: 5
+        ITEM_ALLOWED: "iasurvival:lettuce_seeds"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการปลูกผักแล้ว'
+  DIAMOND_HAMMER_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Diamond Hammer"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:diamond_hammer"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "iaalchemy:demoniac_pickaxe"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "iaalchemy:demoniac_hammer"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
+  ZOMBIE_RED_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ล่า Zombie red"
+    TYPE: "HUNTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iaentity:zombie_red"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "iaentity:zombie_green"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "iaalchemy:zombie_blue"
+  GOLD_FISH_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ตกปลา Gold Fish"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:goldfish"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "iasurvival:green_sunfish"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "iasurvival:blue_parrotfish"

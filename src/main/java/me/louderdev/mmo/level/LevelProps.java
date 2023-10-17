@@ -1,26 +1,25 @@
 package me.louderdev.mmo.level;
 
-import dev.lone.itemsadder.api.CustomBlock;
 import dev.lone.itemsadder.api.CustomCrop;
-import dev.lone.itemsadder.api.CustomStack;
+
 import lombok.Getter;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+
 
 @Getter
 public class LevelProps {
 
     private double requiredLevel;
     private String allowedAsString;
+    private List<String> cmds;
 
-    private CustomBlock allowedBlock;
-    private CustomStack allowedItem, allowedCropsAsSeed;
-    private CustomCrop allowedCrops;
-
-    public LevelProps(double requiredLevel, String allowedAsString, ActionType type) {
+    public LevelProps(double requiredLevel, String allowedAsString, List<String> cmds) {
         this.requiredLevel = requiredLevel;
         this.allowedAsString = allowedAsString;
+        this.cmds = cmds;
 
+        /*
         switch (type) {
             case MINING: {
                 this.allowedBlock = CustomBlock.getInstance(allowedAsString);
@@ -39,5 +38,16 @@ public class LevelProps {
                 break;
             }
         }
+
+         */
+    }
+
+    @Override
+    public String toString() {
+        return "LevelProps{" +
+                "requiredLevel=" + requiredLevel +
+                ", allowedAsString='" + allowedAsString + '\'' +
+                ", cmds=" + cmds +
+                '}';
     }
 }

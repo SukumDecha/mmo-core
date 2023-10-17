@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 @AllArgsConstructor
 public enum Msg {
     REQUIRED_MORE_LEVEL("REQUIRED_MORE_LEVEL"),
+    LEVEL_UP("LEVEL_UP"),
     EARN_XP("EARN_XP");
 
     private String path;
@@ -22,6 +23,6 @@ public enum Msg {
     }
 
     public void sendMessage(Player player, Object ...objects) {
-        player.sendMessage(format());
+        player.sendMessage(format(objects));
     }
 }

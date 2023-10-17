@@ -1,25 +1,28 @@
 package me.louderdev.mmo.level.listener;
 
+import dev.lone.itemsadder.api.Events.CustomBlockBreakEvent;
 import me.louderdev.mmo.user.User;
-import me.louderdev.mmo.utils.level.MiningUtils;
+import me.louderdev.mmo.utils.type.MiningUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 
 
 public class MiningListener implements Listener {
 
     @EventHandler
-    public void onBreak(BlockBreakEvent event) {
+    public void onCustomBlockBreak(CustomBlockBreakEvent event) {
         Player player = event.getPlayer();
-        User user = User.getByUuid(player.getUniqueId());
 
+        User user = User.getByUuid(player.getUniqueId());;
 
-        MiningUtils.handleMining(event.getBlock(), player, user);
+        MiningUtils.handleMining(player, user, event.getNamespacedID());
 
-        if(!MiningUtils.handleFilterMining(event.getBlock(), user, player)) {
+        //prevent player from breaking block above their levels
+        if(!MiningUtils.canBreakBlock(user, player, event.getNamespacedID())) {
             event.setCancelled(true);
         }
     }
+
+
 }
