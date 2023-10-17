@@ -1,0 +1,21 @@
+MMOCORE:
+  WHEAT_LEVEL: #Used as level name on data
+    DISPLAY_NAME: 'ปลูกข้าว'
+    ITEM:
+      USE_CUSTOM_ITEM: TRUE
+      CUSTOM_ITEM: 'CUSTOM_WHEAT' #Level up by plating custom wheat
+      DEFAULT_ITEM:
+        TYPE: "WHEAT"
+        DATA: 0
+    TYPE: 'PLATING'
+    CURRENT_LEVEL: 1
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 10 #required level to use this items
+        ITEM_ALLOWED: "CUSTOM_CANE" #must be seed if it plant
+      2:
+        LEVEL: 20 #required level to use this items
+        ITEM_ALLOWED: "CUSTOM_PUMPKIN" #field for custom items (must be seed if it is plant)

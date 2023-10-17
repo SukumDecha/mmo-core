@@ -1,0 +1,5 @@
+name: MmoLevelDev
+main: me.louderdev.mmo.MmoCore
+version: 0.1-DEV
+author: xfrozenz736
+depend: [ItemsAdder]

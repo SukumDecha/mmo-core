@@ -1,0 +1,6 @@
+players:
+  1111-2222-3333-444:
+    WHEAT_LEVEL:
+      CURRENT_LEVEL: 1
+      CURRENT_XP: 10
+      CURRENT_MAX_XP: 20
