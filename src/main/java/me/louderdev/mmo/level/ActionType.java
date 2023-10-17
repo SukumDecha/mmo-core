@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ActionType {
 
-    PLATING("plant"),
+    PLANTING("plant"),
     MINING("mine"),
     FISHING("fish"),
     HUNTING("kill"),

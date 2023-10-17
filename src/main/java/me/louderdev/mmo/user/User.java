@@ -18,12 +18,13 @@ public class User {
 
     //All user in cached should be online;
     @Getter private static Map<UUID, User> allUsers = new HashMap<>();
-    private final ConfigFile data = MmoCore.getInstance().getDataFile();
+    private static ConfigFile data = MmoCore.getInstance().getDataFile();
 
     private String name;
     private UUID uuid;
     private Level lastestLevel;
     private List<Level> allLevels = new ArrayList<>();
+    private List<String> ownLevels = new ArrayList<>();
     public User(UUID uuid) {
         this.name = Bukkit.getPlayer(uuid).getName();
         this.uuid = uuid;
@@ -39,48 +40,90 @@ public class User {
     }
 
     public void loadAsync() {
-        TaskUtils.runAsync(MmoCore.getInstance(), () -> {
-            ConfigurationSection keySection = data.getConfigurationSection("players." + uuid.toString());
+        this.allLevels = new ArrayList<>();
+
+        TaskUtils.runAsync(() -> {
+            ConfigurationSection keySection = data.getConfigurationSection("players." + name);
 
             if (keySection == null) {
+                System.out.println("NEW USER");
+                fillOthersLevel();
                 this.saveAsync();
                 return;
             }
 
+            System.out.println("Loading User");
             for (String key : keySection.getKeys(false)) {
+                System.out.println("Key: " + key);
                 ConfigurationSection section = keySection.getConfigurationSection(key);
 
                 Level level = new Level(key);
-                level.setCurrentLevel(section.getDouble("CURRENT_LEVEL"));
-                level.setCurrentXP(section.getDouble("CURRENT_XP"));
-                level.setCurrentMaxXP(section.getDouble("CURRENT_MAX_XP"));
+
+                level.setCurrentLevel(section.getInt("CURRENT_LEVEL"));
+                level.setCurrentXP(section.getInt("CURRENT_XP"));
+                level.setCurrentMaxXP(section.getInt("CURRENT_MAX_XP"));
+
+                ownLevels.add(key);
                 allLevels.add(level);
             }
+
+            fillOthersLevel();
+
         });
     }
 
-    public void saveAsync() {
-        TaskUtils.runAsync(MmoCore.getInstance(), () -> {
-            ConfigurationSection section = data.getConfigurationSection("players");
-            ConfigurationSection uuidSection = section.createSection(uuid.toString());
-            for(Level level : getAllLevels()) {
-                ConfigurationSection levelSection = uuidSection.createSection(level.getKeyName());
+    public void save() {
+        ConfigurationSection section = data.getConfigurationSection("players");
 
-                levelSection.set("DISPLAY_NAME", level.getDisplayName());
+        ConfigurationSection nameSection = section.createSection(name);
+        for(Level level : allLevels) {
+            ConfigurationSection levelSection = nameSection.createSection(level.getKeyName());
 
-                ConfigurationSection expSection = levelSection.createSection("EXP");
-                expSection.set("CURRENT_LEVEL", level.getCurrentLevel());
-                expSection.set("CURRENT_XP", level.getCurrentXP());
-                expSection.set("CURRENT_MAX_XP", level.getCurrentMaxXP());
-            }
-        });
+            System.out.println("save CR: " + level.getCurrentLevel());
+            System.out.println("save CX: " + level.getCurrentXP());
+            System.out.println("save CM " + level.getCurrentMaxXP());
+
+            levelSection.set("CURRENT_LEVEL", level.getCurrentLevel());
+            levelSection.set("CURRENT_XP", level.getCurrentXP());
+            levelSection.set("CURRENT_MAX_XP", level.getCurrentMaxXP());
+        }
+
+        Bukkit.getConsoleSender().sendMessage(allLevels.size() + "hahaha");
+        Bukkit.getConsoleSender().sendMessage(allUsers.toString());
 
         data.save();
         data.reload();
     }
-    public static User getByUuid(UUID uuid) {
+    public void saveAsync() {
+        TaskUtils.runAsync(() -> {
+            save();
+        });
+    }
 
-        return allUsers.computeIfAbsent(uuid, User::new);
+    private void fillOthersLevel() {
+        List<Level> toAdd = new ArrayList<>();
+
+        if(allLevels.size() > 0) {
+            for(Level others : Level.getAllLevels()) {
+                if(!ownLevels.contains(others.getKeyName())) {
+                    toAdd.add(new Level(others.getKeyName()));
+                }
+            }
+        } else {
+            for(Level others : Level.getAllLevels()) {
+                toAdd.add(new Level(others.getKeyName()));
+            }
+        }
+
+        System.out.println("toAdd:" + toAdd);
+
+        allLevels.addAll(toAdd);
+
+    }
+    public static User getByUuid(UUID uuid) {
+        User toReturn = allUsers.get(uuid);
+
+        return toReturn == null ? new User(uuid) : toReturn;
     }
 
     public static User getByName(String name) {
@@ -99,5 +142,13 @@ public class User {
         }
 
         return toReturn;
+    }
+
+    public static void updateCached() {
+        for(User user : allUsers.values()) {
+            user.loadAsync();
+        }
+
+        data = MmoCore.getInstance().getDataFile();
     }
 }

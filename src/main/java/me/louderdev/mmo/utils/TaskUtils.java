@@ -10,28 +10,28 @@ public class TaskUtils {
         return new ThreadFactoryBuilder().setNameFormat(name).build();
     }
 
-    public static void run(MmoCore plugin, Callable callable) {
-        plugin.getServer().getScheduler().runTask(plugin, callable::call);
+    public static void run(Callable callable) {
+        MmoCore.getInstance().getServer().getScheduler().runTask(MmoCore.getInstance(), callable::call);
     }
 
-    public static void runAsync(MmoCore plugin, Callable callable) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, callable::call);
+    public static void runAsync( Callable callable) {
+        MmoCore.getInstance().getServer().getScheduler().runTaskAsynchronously(MmoCore.getInstance(), callable::call);
     }
 
-    public static void runLater(MmoCore plugin, Callable callable, long delay) {
-        plugin.getServer().getScheduler().runTaskLater(plugin, callable::call, delay);
+    public static void runLater( Callable callable, long delay) {
+        MmoCore.getInstance().getServer().getScheduler().runTaskLater(MmoCore.getInstance(), callable::call, delay);
     }
 
-    public static void runAsyncLater(MmoCore plugin, Callable callable, long delay) {
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, callable::call, delay);
+    public static void runAsyncLater( Callable callable, long delay) {
+        MmoCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(MmoCore.getInstance(), callable::call, delay);
     }
 
-    public static void runTimer(MmoCore plugin, Callable callable, long delay, long interval) {
-        plugin.getServer().getScheduler().runTaskTimer(plugin, callable::call, delay, interval);
+    public static void runTimer( Callable callable, long delay, long interval) {
+        MmoCore.getInstance().getServer().getScheduler().runTaskTimer(MmoCore.getInstance(), callable::call, delay, interval);
     }
 
-    public static void runAsyncTimer(MmoCore plugin, Callable callable, long delay, long interval) {
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, callable::call, delay, interval);
+    public static void runAsyncTimer( Callable callable, long delay, long interval) {
+        MmoCore.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(MmoCore.getInstance(), callable::call, delay, interval);
     }
 
     public interface Callable {

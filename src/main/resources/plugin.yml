@@ -1,5 +1,6 @@
 name: MmoLevelDev
 main: me.louderdev.mmo.MmoCore
+api-version: 1.13
 version: 0.1-DEV
 author: xfrozenz736
 depend: [ItemsAdder]

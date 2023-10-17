@@ -16,8 +16,11 @@ public class ConfigFile extends YamlConfiguration {
 
     @Getter
     private File file;
+    private String name;
+
 
     public ConfigFile(JavaPlugin plugin, String name) throws IOException, InvalidConfigurationException {
+        this.name = name;
         this.file = new File(plugin.getDataFolder(), name);
 
         if (!this.file.exists()) {
@@ -28,6 +31,7 @@ public class ConfigFile extends YamlConfiguration {
     }
 
     public ConfigFile(JavaPlugin plugin, String name, boolean ignored) {
+        this.name = name;
         this.file = new File(plugin.getDataFolder(), name);
 
         if (!this.file.exists()) {
@@ -50,7 +54,7 @@ public class ConfigFile extends YamlConfiguration {
     }
 
     public void reload() {
-        File file = new File(MmoCore.getInstance().getDataFolder(), getName() + ".yml");
+        File file = new File(MmoCore.getInstance().getDataFolder(), name);
         try {
             load(file);
             save(file);
