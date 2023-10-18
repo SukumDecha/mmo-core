@@ -30,23 +30,18 @@ public class FishingListener implements Listener {
                 User user = User.getByUuid(player.getUniqueId());
                 FishUtils.handleCaught(player, user, customStack.getNamespacedID());
 
-                if(!FishUtils.canCaught(player, user, customStack.getNamespacedID())) {
-                    caught.setItemStack(new ItemStack(Material.DEAD_BUSH));
-                    caught.setMetadata("notAllowed", new FixedMetadataValue(plugin, false));
-                }
             }
         }
     }
 
     @EventHandler
-    public void handlePlayerPickup(PlayerPickupItemEvent event) {
+    public void onPickup(PlayerPickupItemEvent event) {
         Item item = event.getItem();
-
-        if (!item.hasMetadata("notAllowed")) {
-            return;
+        if(!item.hasMetadata("fishing")) return;
+        if(!item.getMetadata("fishing").get(0).equals(event.getPlayer()
+                .getUniqueId().toString())) {
+            event.setCancelled(true);
         }
 
-        item.remove();
-        event.setCancelled(true);
     }
 }

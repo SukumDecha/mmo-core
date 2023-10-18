@@ -31,6 +31,10 @@ public abstract class BaseCommand extends BukkitCommand {
       this(name, aliases, "", false);
    }
 
+   public BaseCommand(String name, List aliases, String testPermission) {
+      this(name, aliases, testPermission, false);
+   }
+
    public BaseCommand(String name, boolean forPlayersOnly) {
       this(name, new ArrayList(), "", forPlayersOnly);
    }

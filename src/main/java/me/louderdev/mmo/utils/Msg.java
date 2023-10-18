@@ -11,6 +11,7 @@ import java.text.MessageFormat;
 public enum Msg {
     REQUIRED_MORE_LEVEL("REQUIRED_MORE_LEVEL"),
     LEVEL_UP("LEVEL_UP"),
+    ITEM_DROP("ITEM_DROP"),
     EARN_XP("EARN_XP");
 
     private String path;

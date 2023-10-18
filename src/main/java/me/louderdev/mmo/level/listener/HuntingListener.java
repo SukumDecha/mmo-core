@@ -32,21 +32,21 @@ public class HuntingListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onDamageEntityByEntity(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Player)) return;;
-
-        Player damager = (Player) event.getDamager();
-        Entity victim = event.getEntity();
-
-        CustomMob customMob = CustomMob.byAlreadySpawned(victim);
-
-        if(customMob != null) {
-            User user = User.getByUuid(damager.getUniqueId());
-
-            if(!HuntingUtils.canDamage(damager, user, customMob.getNamespacedID())) {
-                event.setCancelled(true);
-            }
-        }
-    }
+//    @EventHandler
+//    public void onDamageEntityByEntity(EntityDamageByEntityEvent event) {
+//        if(!(event.getDamager() instanceof Player)) return;;
+//
+//        Player damager = (Player) event.getDamager();
+//        Entity victim = event.getEntity();
+//
+//        CustomMob customMob = CustomMob.byAlreadySpawned(victim);
+//
+//        if(customMob != null) {
+//            User user = User.getByUuid(damager.getUniqueId());
+//
+//            if(!HuntingUtils.canDamage(damager, user, customMob.getNamespacedID())) {
+//                event.setCancelled(true);
+//            }
+//        }
+//    }
 }

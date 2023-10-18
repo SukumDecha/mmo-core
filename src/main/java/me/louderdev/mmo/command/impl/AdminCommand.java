@@ -12,16 +12,18 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class AdminCommand extends BaseCommand {
 
     private MmoCore plugin = MmoCore.getInstance();
 
 
-    public AdminCommand() {
-        super("mmoadmin", Arrays.asList("madmin"), "*", false);
 
+    public AdminCommand() {
+        super("madmin", Arrays.asList(new String("mmoadmn")), "*");
     }
+
 
     @Override
     public void execute(CommandSender sender, String[] args) throws IOException, InvalidConfigurationException {

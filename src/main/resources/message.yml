@@ -7,3 +7,4 @@ LEVEL_UP: "&7&m----- &6Level Up &7&m-----&r\n
   &7จาก &6{2} &7-> &c{3}\n
   &7&m-------------------"
 ## {1} = DISPLAY_NAME, {2} = oldLevel, {3} = newLevel
+ITEM_DROP: "{1} Drop! &eคุณได้รับ {2} &7จากการ {3}"

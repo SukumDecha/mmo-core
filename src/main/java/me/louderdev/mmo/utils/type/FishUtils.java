@@ -1,5 +1,6 @@
 package me.louderdev.mmo.utils.type;
 
+import dev.lone.itemsadder.api.CustomStack;
 import me.louderdev.mmo.level.ActionType;
 import me.louderdev.mmo.level.Level;
 import me.louderdev.mmo.level.LevelProps;
@@ -7,7 +8,11 @@ import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.Msg;
 import org.bukkit.entity.Player;
 
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class FishUtils {
 
@@ -24,34 +29,37 @@ public class FishUtils {
             //no need to loop all levels;
             if(handleAddExp(player, level, nameSpacedID)) {
                 user.setLastestLevel(level);
+
+                List<LevelProps> levelProps = level.getLevelProps().stream()
+                        .filter(l -> level.getCurrentLevel() >= l.getRequiredLevel())
+                        .filter(l -> l.getChance() > 0).collect(Collectors.toList());
+
+                handleDrop(lastestLevel, levelProps, player);
                 return;
             }
         }
     }
 
-    public static boolean canCaught(Player player, User user, String nameSpacedId) {
+    private static void handleDrop(Level level, List<LevelProps> props, Player player) {
 
-        List<Level> fishingLevels = user.getLevelByAction(ActionType.FISHING);
+        for(LevelProps prop : props) {
+            if(ThreadLocalRandom.current().nextInt(0, 100) < prop.getChance()) {
+                CustomStack stack = CustomStack.getInstance(prop.getAllowedAsString());
 
-        for(Level level : fishingLevels) {
-            LevelProps notAllowedProps = level.getLevelProps().stream()
-                    .filter(l -> level.getCurrentLevel() < l.getRequiredLevel())
-                    .filter(l -> l.getAllowedAsString().equalsIgnoreCase(nameSpacedId)).findFirst().orElse(null);
+                /*
+                Item item = player.getWorld().dropItemNaturally(player.getLocation(), stack);
 
-            if(notAllowedProps != null) {
-                Msg.REQUIRED_MORE_LEVEL.sendMessage(player, new Object[]{ "",
-                        level.getDisplayName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
-                });
+                item.setMetadata("fishing", new FixedMetadataValue(MmoCore.getInstance(),
+                        player.getUniqueId()));
 
-                player.playSound(player.getLocation(), level.getSoundFail(), 0.5f, 0.5f);
-                return false;
+                 */
+                player.getInventory().addItem(stack.getItemStack());
+                Msg.ITEM_DROP.sendMessage(player, "", prop.getRarity(), stack.getDisplayName(), level.getDisplayName());
             }
         }
-
-        return true;
     }
 
-    public static boolean handleAddExp(Player player, Level level, String nameSpacedId) {
+    private static boolean handleAddExp(Player player, Level level, String nameSpacedId) {
         if(level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
             level.handleAddExp(player);
             return true;

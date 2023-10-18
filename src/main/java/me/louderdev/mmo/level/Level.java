@@ -114,7 +114,9 @@ public class Level {
                 Bukkit.getConsoleSender().sendMessage("ITEM_ALLOWED: " + requireSection.getInt("ITEM_ALLOWED"));
 
                 levelProps.add(new LevelProps(requireSection.getInt("LEVEL"),
-                        requireSection.getString("ITEM_ALLOWED"), requireSection.getStringList("CMDS").stream().toList()));
+                        requireSection.getString("ITEM_ALLOWED"), requireSection.getStringList("CMDS").stream().toList(),
+                        requireSection.getInt("CHANCE"),
+                        requireSection.getString("RARITY")));
             }
         }
 

@@ -63,21 +63,25 @@ MMOCORE:
         ITEM_ALLOWED: "iaalchemy:demoniac_hammer"
         CMDS:
           - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
-  ZOMBIE_RED_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ล่า Zombie red"
+  CHICKEN_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ล่า Chicken"
     TYPE: "HUNTING"
     SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iaentity:zombie_red"
+    BEGIN_CUSTOM_ITEM: "iaentity:chicken"
     EXP_GAIN:
       MIN: 10
       MAX: 20
     REQUIREMENT:
       1:
         LEVEL: 4
-        ITEM_ALLOWED: "iaentity:zombie_green"
+        chance: 3
+        RARITY: "&1Extra"
+        ITEM_ALLOWED: "iasurvival:chicken_legs"
       2:
         LEVEL: 6
-        ITEM_ALLOWED: "iaalchemy:zombie_blue"
+        chance: 2
+        RARITY: "&5Rare"
+        ITEM_ALLOWED: "iasurvival:chicken_head"
   GOLD_FISH_LEVEL: #Used as level name on data
     DISPLAY_NAME: "ตกปลา Gold Fish"
     TYPE: "CRAFTING"
@@ -89,7 +93,11 @@ MMOCORE:
     REQUIREMENT:
       1:
         LEVEL: 4
+        CHANCE: 5
+        RARITY: "&1Extra"
         ITEM_ALLOWED: "iasurvival:green_sunfish"
       2:
         LEVEL: 6
+        CHANCE: 3
+        RARITY: "&5Rare"
         ITEM_ALLOWED: "iasurvival:blue_parrotfish"
