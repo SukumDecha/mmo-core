@@ -6,11 +6,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ActionType {
 
-    PLANTING("plant"),
-    MINING("mine"),
-    FISHING("fish"),
-    HUNTING("kill"),
-    CRAFTING("craft");
+    PLANTING("ปลูก/เก็บเกี่ยว"),
+    MINING("ขุด"),
+    FISHING("ตกปลา"),
+    HUNTING("ล่าสัตว์"),
+    CRAFTING("คราฟ");
 
     @Getter private String name;
 }

@@ -12,6 +12,7 @@ import me.louderdev.mmo.user.UserListener;
 import me.louderdev.mmo.utils.file.ConfigFile;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -33,6 +34,11 @@ public class MmoCore extends JavaPlugin {
         loadListeners();
         loadCommands();
         loadRunnables();
+
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            User user = User.getByUuid(player.getUniqueId());
+            user.loadAsync();
+        }
     }
 
     @Override

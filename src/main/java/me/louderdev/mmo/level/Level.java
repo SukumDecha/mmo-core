@@ -14,7 +14,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
@@ -26,11 +28,15 @@ public class Level {
     private Sound soundFail;
     private ActionType actionType; //Action type of this level
     private List<LevelProps> levelProps; //levelProps
+    private Map<String, String> fromOthers;
     @Getter private static List<Level> allLevels = new ArrayList<>();;
+
+    @Getter private static Map<String, String> duplicateLevel = new HashMap<>();
 
     public Level(String keyName, FileConfiguration configuration) {
         this.keyName = keyName;
         this.levelProps = new ArrayList<>();
+        this.fromOthers = new HashMap<>();
 
         this.load(configuration);
     }
@@ -53,6 +59,7 @@ public class Level {
             this.currentMaxXP = 20;
 
             this.levelProps = others.getLevelProps();
+            this.fromOthers = others.getFromOthers();
         } else {
             throw new NullPointerException("Could not find level with that keyname (" +
                     otherKeyName + ")");
@@ -66,7 +73,6 @@ public class Level {
         allLevels = new ArrayList<>();
 
         for(String key : section.getKeys(false)) {
-            System.out.println("WKWKWKWK: " + key);
 
             Level toAdd = new Level(key, config);
             allLevels.add(toAdd);
@@ -78,23 +84,10 @@ public class Level {
         System.out.println("Loading " + keyName);
         ConfigurationSection section = c.getConfigurationSection("MMOCORE." + keyName);
 
-
         this.displayName = section.getString("DISPLAY_NAME");
         this.beginItem = section.getString("BEGIN_CUSTOM_ITEM");
         this.actionType = ActionType.valueOf(section.getString("TYPE"));
         this.soundFail = Sound.valueOf(section.getString("SOUND_FAIL"));
-        /*
-        switch (actionType) {
-            case MINING:
-                Bukkit.broadcastMessage("Doing this ");
-                this.startMaterial = new StartMaterial(CustomBlock.getInstance(section.getString("BEGIN_CUSTOM_ITEM")));
-                break;
-            default:
-                Bukkit.broadcastMessage("Doing that ");
-                this.startMaterial = new StartMaterial(CustomStack.getInstance(section.getString("BEGIN_CUSTOM_ITEM")));
-                break;
-        }
-         */
 
         //Set min-max exp section
         if(section.contains("EXP_GAIN")) {
@@ -113,11 +106,20 @@ public class Level {
                 Bukkit.getConsoleSender().sendMessage("Level: " + requireSection.getInt("LEVEL"));
                 Bukkit.getConsoleSender().sendMessage("ITEM_ALLOWED: " + requireSection.getInt("ITEM_ALLOWED"));
 
-                levelProps.add(new LevelProps(requireSection.getInt("LEVEL"),
+                LevelProps props = new LevelProps(requireSection.getInt("LEVEL"),
                         requireSection.getString("ITEM_ALLOWED"), requireSection.getStringList("CMDS").stream().toList(),
                         requireSection.getInt("CHANCE"),
-                        requireSection.getString("RARITY")));
+                        requireSection.getString("RARITY"));
+
+                levelProps.add(props);
+                duplicateLevel.put(props.getAllowedAsString(), keyName);
             }
+        }
+
+
+        if(duplicateLevel.containsKey(beginItem)) {
+            //current & owner
+            fromOthers.put(beginItem, duplicateLevel.get(beginItem));
         }
 
         System.out.println("Done loading:");
@@ -192,12 +194,13 @@ public class Level {
                 currentXP = currentXP - currentMaxXP;
                 currentMaxXP = newMaxXP;
 
-                handleLevelUp(player);
                 Msg.LEVEL_UP.sendMessage(player, new Object[]{
                         "",
-                        getActionType().getName(),
+                        displayName,
                         currentLevel, ++currentLevel
                 });
+
+                handleLevelUp(player);
             }
             return true;
         }
@@ -207,7 +210,7 @@ public class Level {
 
     public void handleLevelUp(Player player) {;
         for(LevelProps props : levelProps) {
-            if(props.getRequiredLevel() == (currentLevel + 1) && props.getCmds().size() > 0) {
+            if(props.getRequiredLevel() == currentLevel && props.getCmds().size() > 0) {
                 TaskUtils.run(() -> {
                     for(String cmd : props.getCmds()) {
                         cmd = cmd.replace("%player%", player.getName());
@@ -223,6 +226,16 @@ public class Level {
         for(Level level : allLevels) {
             if(level.getKeyName().equalsIgnoreCase(keyName)) {
                 return level;
+            }
+        }
+
+        return null;
+    }
+
+    public LevelProps getPropByString(String allowedAsString) {
+        for(LevelProps prop : levelProps) {
+            if(prop.getAllowedAsString().equals(allowedAsString)) {
+                return prop;
             }
         }
 
@@ -252,6 +265,8 @@ public class Level {
                 .append("    &5current Level: &d").append(currentLevel)
                 .append("    &5current XP: &d").append(currentXP)
                 .append("    &5current MaxXP: &d").append(currentMaxXP)
+                .append("  &5Level Props: &r\n")
+                .append(levelProps.toString())
                 .toString();
     }
 

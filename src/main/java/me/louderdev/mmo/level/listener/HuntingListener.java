@@ -2,11 +2,17 @@ package me.louderdev.mmo.level.listener;
 
 import dev.lone.itemsadder.api.CustomMob;
 import dev.lone.itemsadder.api.CustomStack;
+import io.lumine.mythic.api.MythicProvider;
+import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.type.CraftUtils;
 import me.louderdev.mmo.utils.type.HuntingUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,16 +26,15 @@ public class HuntingListener implements Listener {
 
     @EventHandler
     public void onHunt(EntityDeathEvent event) {
-        if(event.getEntity().getKiller() == null) return;
+        if(event.getEntity().getKiller() == null || event.getEntity() instanceof Item) return;
 
-        CustomMob customMob = CustomMob.byAlreadySpawned(event.getEntity());
+        LivingEntity entity = event.getEntity();
+        Player player = event.getEntity().getKiller();
+        User user = User.getByUuid(player.getUniqueId());
 
-        if(customMob != null) {
-            Player player = event.getEntity().getKiller();
-            User user = User.getByUuid(player.getUniqueId());
+        ActiveMob mythicMob = MythicBukkit.inst().getMobManager().getMythicMobInstance(entity);
 
-            HuntingUtils.handleKilled(player, user, customMob.getNamespacedID());
-        }
+        HuntingUtils.handleKilled(player, user, mythicMob == null ? event.getEntity().getName() : mythicMob.getName(), event.getEntity().getLocation());
     }
 
 //    @EventHandler

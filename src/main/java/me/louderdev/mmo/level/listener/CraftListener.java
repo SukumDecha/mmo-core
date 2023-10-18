@@ -32,13 +32,14 @@ public class CraftListener implements Listener {
                Player player = (Player) event.getWhoClicked();
                User user = User.getByUuid(player.getUniqueId());
 
-               CraftUtils.handleCraft(player, user, (customStack == null ? resultItem.getType().name()
-                       : customStack.getNamespacedID()));
-
                if(!CraftUtils.canCraft(player, user,  (customStack == null ? resultItem.getType().name()
                        : customStack.getNamespacedID()))) {
                    event.setCancelled(true);
+                   return;
                }
+
+               CraftUtils.handleCraft(player, user, (customStack == null ? resultItem.getType().name()
+                       : customStack.getNamespacedID()));
 
            } catch (Exception e) {
                e.printStackTrace();

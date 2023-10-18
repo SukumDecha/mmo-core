@@ -18,12 +18,10 @@ public enum Msg {
 
 
     public String format(Object ...objects) {
-        return new MessageFormat(ChatColor.translateAlternateColorCodes('&',
-                MmoCore.getInstance().getMessageFile().getString(path))
-        ).format(objects);
+        return new MessageFormat(MmoCore.getInstance().getMessageFile().getString(path)).format(objects);
     }
 
     public void sendMessage(Player player, Object ...objects) {
-        player.sendMessage(format(objects));
+        player.sendMessage(CC.translate(format(objects)));
     }
 }

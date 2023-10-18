@@ -6,6 +6,7 @@ import me.louderdev.mmo.level.Level;
 import me.louderdev.mmo.level.LevelProps;
 import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.Msg;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 
@@ -21,20 +22,33 @@ public class FishUtils {
     public static void handleCaught(Player player, User user, String nameSpacedID) {
         Level lastestLevel = user.getLastestLevel();
 
-        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.FISHING && handleAddExp(player, lastestLevel, nameSpacedID)) return;
+        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.FISHING){
+            if(handleAddExp(player, user, lastestLevel, nameSpacedID)) {
+
+                List<LevelProps> levelProps = lastestLevel.getLevelProps().stream()
+                        .filter(l -> lastestLevel.getCurrentLevel() >= l.getRequiredLevel())
+                        .filter(l -> l.getChance() > 0).collect(Collectors.toList());
+
+                handleDrop(lastestLevel, levelProps, player);
+            }
+        }
 
         List<Level> fishingLevels = user.getLevelByAction(ActionType.FISHING);
 
         for(Level level : fishingLevels) {
             //no need to loop all levels;
-            if(handleAddExp(player, level, nameSpacedID)) {
+            if(handleAddExp(player, user, level, nameSpacedID)) {
                 user.setLastestLevel(level);
 
                 List<LevelProps> levelProps = level.getLevelProps().stream()
                         .filter(l -> level.getCurrentLevel() >= l.getRequiredLevel())
                         .filter(l -> l.getChance() > 0).collect(Collectors.toList());
 
-                handleDrop(lastestLevel, levelProps, player);
+                if(levelProps.size() > 0)   {
+                    handleDrop(level, levelProps, player);
+                }
+
+                //remove return for multiple level support
                 return;
             }
         }
@@ -43,7 +57,8 @@ public class FishUtils {
     private static void handleDrop(Level level, List<LevelProps> props, Player player) {
 
         for(LevelProps prop : props) {
-            if(ThreadLocalRandom.current().nextInt(0, 100) < prop.getChance()) {
+
+            if(ThreadLocalRandom.current().nextInt(1, 10) < prop.getChance()) {
                 CustomStack stack = CustomStack.getInstance(prop.getAllowedAsString());
 
                 /*
@@ -54,17 +69,36 @@ public class FishUtils {
 
                  */
                 player.getInventory().addItem(stack.getItemStack());
-                Msg.ITEM_DROP.sendMessage(player, "", prop.getRarity(), stack.getDisplayName(), level.getDisplayName());
+                Msg.ITEM_DROP.sendMessage(player, "", prop.getRarity(), (stack == null
+                ? prop.getAllowedAsString() : stack.getDisplayName()), level.getDisplayName(), prop.getChance());
+            } else {
+                Bukkit.broadcastMessage("Naj");
             }
+
+            Bukkit.broadcastMessage("Passed");
         }
+
+        player.updateInventory();
     }
 
-    private static boolean handleAddExp(Player player, Level level, String nameSpacedId) {
-        if(level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
-            level.handleAddExp(player);
-            return true;
+    public static boolean handleAddExp(Player player, User user, Level level, String nameSpacedId) {
+        if(level.getFromOthers().containsKey(nameSpacedId)) {
+            Level other = user.getLevelByName(level.getFromOthers().get(nameSpacedId));
+
+            if(other.getCurrentLevel() < other.getPropByString(nameSpacedId).getRequiredLevel() ) {
+                return false;
+            } else {
+                level.handleAddExp(player);
+                return true;
+            }
+
         }
 
-        return false;
+        if(!level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
+            return false;
+        }
+
+        level.handleAddExp(player);
+        return true;
     }
 }

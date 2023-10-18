@@ -41,6 +41,7 @@ public class User {
 
     public void loadAsync() {
         this.allLevels = new ArrayList<>();
+        this.ownLevels = new ArrayList<>();
 
         TaskUtils.runAsync(() -> {
             ConfigurationSection keySection = data.getConfigurationSection("players." + name);
@@ -144,6 +145,16 @@ public class User {
         return toReturn;
     }
 
+    public Level getLevelByName(String keyName) {
+
+        for(Level level : allLevels) {
+            if(level.getKeyName().equals(keyName)) {
+                return level;
+            }
+        }
+
+        return null;
+    }
     public static void updateCached() {
         for(User user : allUsers.values()) {
             user.loadAsync();

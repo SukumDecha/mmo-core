@@ -9,11 +9,11 @@ MMOCORE:
       MAX: 20
     REQUIREMENT:
       1:
-        LEVEL: 10
+        LEVEL: 4
         ITEM_ALLOWED: "iasurvival:crystal_block"
       2:
         LEVEL: 20
-        ITEM_ALLOWED: "spinel_block"
+        ITEM_ALLOWED: "iasurvival:spinel_block"
   TURQUOISE_LEVEL: #Used as level name on data
     DISPLAY_NAME: "ขุด Turquoise"
     TYPE: "MINING"
@@ -39,7 +39,7 @@ MMOCORE:
       MAX: 20
     REQUIREMENT:
       1:
-        LEVEL: 3
+        LEVEL: 4
         ITEM_ALLOWED: "iasurvival:garlic_seeds"
       2:
         LEVEL: 5
@@ -63,37 +63,64 @@ MMOCORE:
         ITEM_ALLOWED: "iaalchemy:demoniac_hammer"
         CMDS:
           - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
+  OAK_BUTTON_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Oak Button"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "OAK_BUTTON"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "STONE_BUTTON"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "BIRCH_BUTTON"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
+  STONE_BUTTON_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Stone Button"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "STONE_BUTTON"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 2
+        ITEM_ALLOWED: "SPRUCE_BUTTON"
   CHICKEN_LEVEL: #Used as level name on data
     DISPLAY_NAME: "ล่า Chicken"
     TYPE: "HUNTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iaentity:chicken"
+    BEGIN_CUSTOM_ITEM: "CHICKEN"
     EXP_GAIN:
       MIN: 10
       MAX: 20
     REQUIREMENT:
       1:
-        LEVEL: 4
-        chance: 3
+        LEVEL: 3
+        CHANCE: 50
         RARITY: "&1Extra"
-        ITEM_ALLOWED: "iasurvival:chicken_legs"
+        ITEM_ALLOWED: "CAKE"
       2:
-        LEVEL: 6
-        chance: 2
+        LEVEL: 4
+        CHANCE: 50
         RARITY: "&5Rare"
-        ITEM_ALLOWED: "iasurvival:chicken_head"
-  GOLD_FISH_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ตกปลา Gold Fish"
-    TYPE: "CRAFTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iasurvival:goldfish"
+        ITEM_ALLOWED: "DIRT"
+  FISH_COD_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ตกปลา Cod"
+    TYPE: "FISHING"
+    BEGIN_CUSTOM_ITEM: "COD"
     EXP_GAIN:
       MIN: 10
       MAX: 20
     REQUIREMENT:
       1:
-        LEVEL: 4
-        CHANCE: 5
+        LEVEL: 2
+        CHANCE: 50
         RARITY: "&1Extra"
         ITEM_ALLOWED: "iasurvival:green_sunfish"
       2:
