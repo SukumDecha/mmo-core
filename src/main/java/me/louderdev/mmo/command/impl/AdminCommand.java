@@ -18,8 +18,6 @@ public class AdminCommand extends BaseCommand {
 
     private MmoCore plugin = MmoCore.getInstance();
 
-
-
     public AdminCommand() {
         super("madmin", Arrays.asList(new String("mmoadmn")), "*");
     }

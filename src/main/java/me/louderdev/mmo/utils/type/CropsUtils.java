@@ -17,20 +17,22 @@ public class CropsUtils {
     public static void handleCrops(Player player, User user, String nameSpacedId) {
         Level lastestLevel = user.getLastestLevel();
 
-        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.PLANTING && handleAddExp(player, lastestLevel, nameSpacedId)) return;
+        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.PLANTING && handleAddExp(player, user, lastestLevel, nameSpacedId)) return;
 
         List<Level> cropsLevels = user.getLevelByAction(ActionType.PLANTING);
 
         for(Level level : cropsLevels) {
             //no need to loop all levels;
-            if(handleAddExp(player, level, nameSpacedId)) {
+            if(handleAddExp(player, user, level, nameSpacedId)) {
                 user.setLastestLevel(level);
+                //remove return for multiple level support
                 return;
             }
         }
     }
 
     public static boolean canGrowSeeds(User user, Player player, String nameSpacedId) {
+        if(player.isOp()) return true;
 
         List<Level> cropsLevels = user.getLevelByAction(ActionType.PLANTING);
 
@@ -41,7 +43,7 @@ public class CropsUtils {
 
             if(notAllowedProps != null) {
                 Msg.REQUIRED_MORE_LEVEL.sendMessage(player, new Object[]{ "",
-                        level.getDisplayName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
+                        level.getDisplayName(), level.getActionType().getName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
                 });
 
                 player.playSound(player.getLocation(), level.getSoundFail(), 0.5f, 0.5f);
@@ -52,12 +54,24 @@ public class CropsUtils {
         return true;
     }
 
-    public static boolean handleAddExp(Player player, Level level, String nameSpacedId) {
-        if(level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
-            level.handleAddExp(player);
-            return true;
+    public static boolean handleAddExp(Player player, User user, Level level, String nameSpacedId) {
+        if(level.getFromOthers().containsKey(nameSpacedId)) {
+            Level other = user.getLevelByName(level.getFromOthers().get(nameSpacedId));
+
+            if(other.getCurrentLevel() < other.getPropByString(nameSpacedId).getRequiredLevel() ) {
+                return false;
+            } else {
+                level.handleAddExp(player);
+                return true;
+            }
+
         }
 
-        return false;
+        if(!level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
+            return false;
+        }
+
+        level.handleAddExp(player);
+        return true;
     }
 }

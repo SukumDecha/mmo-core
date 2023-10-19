@@ -5,6 +5,7 @@ import me.louderdev.mmo.level.Level;
 import me.louderdev.mmo.level.LevelProps;
 import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.Msg;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,20 +23,24 @@ public class CraftUtils {
         Level lastestLevel = user.getLastestLevel();
 
         if(lastestLevel != null && lastestLevel.getActionType() == ActionType.CRAFTING &&
-                handleAddExp(player, lastestLevel, keySpace)) return;
+                handleAddExp(player, user, lastestLevel, keySpace)) {
+            return;
+        }
 
         List<Level> craftingLevels = user.getLevelByAction(ActionType.CRAFTING);
 
         for(Level level : craftingLevels) {
             //no need to loop all levels;
-            if(handleAddExp(player, level, keySpace)) {
+            if(handleAddExp(player, user, level, keySpace)) {
                 user.setLastestLevel(level);
+                //remove return for multiple level support
                 return;
             }
         }
     }
 
     public static boolean canCraft(Player player, User user, String keyName) {
+        if(player.isOp()) return true;
 
         List<Level> craftingLevels = user.getLevelByAction(ActionType.CRAFTING);
 
@@ -46,7 +51,7 @@ public class CraftUtils {
 
             if(notAllowedProps != null) {
                 Msg.REQUIRED_MORE_LEVEL.sendMessage(player, new Object[]{ "",
-                        level.getDisplayName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
+                        level.getDisplayName(), level.getActionType().getName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
                 });
 
                 player.playSound(player.getLocation(), level.getSoundFail(), 0.5f, 0.5f);
@@ -58,12 +63,29 @@ public class CraftUtils {
     }
 
 
-    public static boolean handleAddExp(Player player, Level level, String nameSpacedId) {
-        if(level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
-            level.handleAddExp(player);
-            return true;
+    public static boolean handleAddExp(Player player, User user, Level level, String nameSpacedId) {
+        if(level.getFromOthers().containsKey(nameSpacedId)) {
+//            Bukkit.broadcastMessage("Found the valid");
+//            Bukkit.broadcastMessage("Input level: " + level.getKeyName());
+//
+//            Bukkit.broadcastMessage("Other level: " + other.getKeyName());
+
+            Level other = user.getLevelByName(level.getFromOthers().get(nameSpacedId));
+
+            if(other.getCurrentLevel() < other.getPropByString(nameSpacedId).getRequiredLevel() ) {
+                return false;
+            } else {
+                level.handleAddExp(player);
+                return true;
+            }
+
         }
 
-        return false;
+        if(!level.getBeginItem().equalsIgnoreCase(nameSpacedId)) {
+            return false;
+        }
+
+        level.handleAddExp(player);
+        return true;
     }
 }

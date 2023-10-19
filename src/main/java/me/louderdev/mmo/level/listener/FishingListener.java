@@ -22,18 +22,20 @@ public class FishingListener implements Listener {
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if(event.getCaught() != null) {
-            Item caught = (Item) event.getCaught();
+            try {
+                Item caught = (Item) event.getCaught();
 
-            CustomStack customStack = CustomStack.byItemStack(caught.getItemStack());
-            if(customStack != null) {
+                CustomStack customStack = CustomStack.byItemStack(caught.getItemStack());
                 Player player = event.getPlayer();
                 User user = User.getByUuid(player.getUniqueId());
-                FishUtils.handleCaught(player, user, customStack.getNamespacedID());
+                FishUtils.handleCaught(player, user, customStack == null ?
+                        caught.getItemStack().getType().name() : customStack.getNamespacedID());
 
-            }
+            } catch (Exception e) {}
         }
     }
 
+    /*
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event) {
         Item item = event.getItem();
@@ -42,6 +44,7 @@ public class FishingListener implements Listener {
                 .getUniqueId().toString())) {
             event.setCancelled(true);
         }
-
     }
+
+     */
 }

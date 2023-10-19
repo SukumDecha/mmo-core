@@ -56,6 +56,6 @@ public class LevelProps {
                 ", requiredLevel=" + requiredLevel +
                 ", allowedAsString='" + allowedAsString + '\'' +
                 ", cmds=" + cmds +
-                '}';
+                '}' + "\n";
     }
 }

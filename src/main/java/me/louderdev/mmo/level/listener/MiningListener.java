@@ -13,15 +13,15 @@ public class MiningListener implements Listener {
     @EventHandler
     public void onCustomBlockBreak(CustomBlockBreakEvent event) {
         Player player = event.getPlayer();
-
         User user = User.getByUuid(player.getUniqueId());;
-
-        MiningUtils.handleMining(player, user, event.getNamespacedID());
 
         //prevent player from breaking block above their levels
         if(!MiningUtils.canBreakBlock(user, player, event.getNamespacedID())) {
             event.setCancelled(true);
+            return;
         }
+
+        MiningUtils.handleMining(player, user, event.getNamespacedID());
     }
 
 
