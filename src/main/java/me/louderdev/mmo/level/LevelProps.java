@@ -22,27 +22,6 @@ public class LevelProps {
         this.cmds = cmds;
         this.chance = chance;
         this.rarity = rarity;
-        /*
-        switch (type) {
-            case MINING: {
-                this.allowedBlock = CustomBlock.getInstance(allowedAsString);
-                break;
-            }
-            case PLATING: {
-                this.allowedCropsAsSeed =CustomStack.getInstance(allowedAsString);
-                break;
-            }
-            case CRAFTING: {
-                //Parased from string
-                this.allowedItem = CustomStack.getInstance(allowedAsString);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-         */
     }
 
     public boolean isCustom() {

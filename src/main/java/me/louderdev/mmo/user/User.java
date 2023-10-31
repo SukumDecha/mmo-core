@@ -99,6 +99,7 @@ public class User {
         });
     }
 
+    /* Fill the other new levels to player */
     private void fillOthersLevel() {
         List<Level> toAdd = new ArrayList<>();
 
@@ -113,8 +114,6 @@ public class User {
                 toAdd.add(new Level(others.getKeyName()));
             }
         }
-
-        System.out.println("toAdd:" + toAdd);
 
         allLevels.addAll(toAdd);
 

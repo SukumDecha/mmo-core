@@ -7,6 +7,11 @@ MMOCORE:
     EXP_GAIN:
       MIN: 10
       MAX: 20
+    REWARDS:
+      1:
+        - 'say %player% is now level 1 give them some reward'
+      2:
+        - 'say %player% is now level 2 give them some reward'
     REQUIREMENT:
       1:
         LEVEL: 4
