@@ -1,0 +1,19 @@
+MMOCORE:
+  FISH_COD_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ตกปลา Cod"
+    TYPE: "FISHING"
+    BEGIN_CUSTOM_ITEM: "COD"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 2
+        CHANCE: 50
+        RARITY: "&1Extra"
+        ITEM_ALLOWED: "iasurvival:green_sunfish"
+      2:
+        LEVEL: 6
+        CHANCE: 3
+        RARITY: "&5Rare"
+        ITEM_ALLOWED: "iasurvival:blue_parrotfish"

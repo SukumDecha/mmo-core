@@ -71,11 +71,7 @@ public class FishUtils {
                 player.getInventory().addItem(stack.getItemStack());
                 Msg.ITEM_DROP.sendMessage(player, "", prop.getRarity(), (stack == null
                 ? prop.getAllowedAsString() : stack.getDisplayName()), level.getDisplayName(), prop.getChance());
-            } else {
-                Bukkit.broadcastMessage("Naj");
             }
-
-            Bukkit.broadcastMessage("Passed");
         }
 
         player.updateInventory();

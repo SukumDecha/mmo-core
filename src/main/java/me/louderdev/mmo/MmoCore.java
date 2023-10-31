@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class MmoCore extends JavaPlugin {
@@ -23,7 +25,10 @@ public class MmoCore extends JavaPlugin {
     @Getter
     private static MmoCore instance;
 
-    private ConfigFile configFile, messageFile, dataFile;
+    private ConfigFile configFile, dataFile, cachedFile,
+    craftFile, fishFile, huntFile, mineFile, plantFile;
+
+    private List<ConfigFile> levelFiles = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -49,8 +54,22 @@ public class MmoCore extends JavaPlugin {
     @SneakyThrows
     public void loadFiles() {
         this.configFile = new ConfigFile(this, "config.yml");
-        this.messageFile = new ConfigFile(this, "message.yml");
         this.dataFile = new ConfigFile(this, "data.yml");
+        this.cachedFile = new ConfigFile(this, "cached.yml");
+
+
+        this.craftFile = new ConfigFile(this, "crafts.yml");
+        this.fishFile = new ConfigFile(this, "fishs.yml");
+        this.huntFile = new ConfigFile(this, "hunts.yml");
+        this.mineFile = new ConfigFile(this, "mines.yml");
+        this.plantFile = new ConfigFile(this, "plants.yml");
+
+        System.out.println("Creating the levels files");
+        levelFiles.add(this.craftFile);
+        levelFiles.add(this.fishFile);
+        levelFiles.add(this.huntFile);
+        levelFiles.add(this.mineFile);
+        levelFiles.add(this.plantFile);
     }
 
     private void loadCommands() {
@@ -59,6 +78,8 @@ public class MmoCore extends JavaPlugin {
     private void loadImportants() {
         Level.init();
     }
+
+    @SneakyThrows
     private void loadListeners() {
         Bukkit.getServer().getPluginManager().registerEvents(new UserListener(), this);
 
@@ -66,7 +87,7 @@ public class MmoCore extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new FishingListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new CraftListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new CropsListener(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new MiningListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new MiningListener(cachedFile), this);
     }
 
     private void loadRunnables() {
@@ -76,13 +97,28 @@ public class MmoCore extends JavaPlugin {
         for(User user : User.getAllUsers().values()) {
             user.save();
         }
+
+        cachedFile.set("placed_blocks", MiningListener.getPlacedBlock());
+        cachedFile.save();
     }
 
     public void reload() throws IOException, InvalidConfigurationException {
         this.configFile = new ConfigFile(this, "config.yml");
-        this.messageFile = new ConfigFile(this, "message.yml");
         this.dataFile = new ConfigFile(this, "data.yml");
+        this.cachedFile = new ConfigFile(this, "cached.yml");
 
+        this.craftFile = new ConfigFile(this, "crafts.yml");
+        this.fishFile = new ConfigFile(this, "fishs.yml");
+        this.huntFile = new ConfigFile(this, "hunts.yml");
+        this.mineFile = new ConfigFile(this, "mines.yml");
+        this.plantFile = new ConfigFile(this, "plants.yml");
+
+        System.out.println("Creating the levels files");
+        levelFiles.add(this.craftFile);
+        levelFiles.add(this.fishFile);
+        levelFiles.add(this.huntFile);
+        levelFiles.add(this.mineFile);
+        levelFiles.add(this.plantFile);
         Level.init();
         User.updateCached();
     }

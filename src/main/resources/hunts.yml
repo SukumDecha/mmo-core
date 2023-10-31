@@ -1,0 +1,19 @@
+MMOCORE:
+  CHICKEN_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ล่า Chicken"
+    TYPE: "HUNTING"
+    BEGIN_CUSTOM_ITEM: "CHICKEN"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 3
+        CHANCE: 50
+        RARITY: "&1Extra"
+        ITEM_ALLOWED: "CAKE"
+      2:
+        LEVEL: 4
+        CHANCE: 50
+        RARITY: "&5Rare"
+        ITEM_ALLOWED: "DIRT"

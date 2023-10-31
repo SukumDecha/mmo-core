@@ -54,6 +54,22 @@ public class MiningUtils {
         return true;
     }
 
+    public static boolean isInConfigBlock(User user, String nameSpacedId) {
+
+        List<Level> miningLevels = user.getLevelByAction(ActionType.MINING);
+
+        for(Level level : miningLevels) {
+            if(level.getBeginItem().equalsIgnoreCase(nameSpacedId)) return true;
+
+            LevelProps props = level.getLevelProps().stream()
+                    .filter(l -> l.getAllowedAsString().equalsIgnoreCase(nameSpacedId)).findFirst().orElse(null);
+
+            if(props != null) return true;
+        }
+
+        return true;
+    }
+
     public static boolean handleAddExp(Player player, User user, Level level, String nameSpacedId) {
         if(level.getFromOthers().containsKey(nameSpacedId)) {
             Level other = user.getLevelByName(level.getFromOthers().get(nameSpacedId));
