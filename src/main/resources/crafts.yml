@@ -1,0 +1,47 @@
+MMOCORE:
+  DIAMOND_HAMMER_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Diamond Hammer"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:diamond_hammer"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "iaalchemy:demoniac_pickaxe"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "iaalchemy:demoniac_hammer"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
+  OAK_BUTTON_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Oak Button"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "OAK_BUTTON"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "STONE_BUTTON"
+      2:
+        LEVEL: 6
+        ITEM_ALLOWED: "BIRCH_BUTTON"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
+  STONE_BUTTON_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "คราฟ Stone Button"
+    TYPE: "CRAFTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "STONE_BUTTON"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 2
+        ITEM_ALLOWED: "SPRUCE_BUTTON"

@@ -47,16 +47,21 @@ public class User {
             ConfigurationSection keySection = data.getConfigurationSection("players." + name);
 
             if (keySection == null) {
-                System.out.println("NEW USER");
                 fillOthersLevel();
                 this.saveAsync();
                 return;
             }
 
             System.out.println("Loading User");
+
             for (String key : keySection.getKeys(false)) {
                 System.out.println("Key: " + key);
                 ConfigurationSection section = keySection.getConfigurationSection(key);
+
+                if(Level.getByKeyName(key) == null) {
+                    data.set(section.getCurrentPath(), null);
+                    continue;
+                }
 
                 Level level = new Level(key);
 
@@ -80,17 +85,10 @@ public class User {
         for(Level level : allLevels) {
             ConfigurationSection levelSection = nameSection.createSection(level.getKeyName());
 
-            System.out.println("save CR: " + level.getCurrentLevel());
-            System.out.println("save CX: " + level.getCurrentXP());
-            System.out.println("save CM " + level.getCurrentMaxXP());
-
             levelSection.set("CURRENT_LEVEL", level.getCurrentLevel());
             levelSection.set("CURRENT_XP", level.getCurrentXP());
             levelSection.set("CURRENT_MAX_XP", level.getCurrentMaxXP());
         }
-
-        Bukkit.getConsoleSender().sendMessage(allLevels.size() + "hahaha");
-        Bukkit.getConsoleSender().sendMessage(allUsers.toString());
 
         data.save();
         data.reload();

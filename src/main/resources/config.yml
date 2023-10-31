@@ -1,130 +1,29 @@
-MMOCORE:
-  RUBY_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ขุด Ruby"
-    TYPE: "MINING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iasurvival:ruby_block"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 4
-        ITEM_ALLOWED: "iasurvival:crystal_block"
-      2:
-        LEVEL: 20
-        ITEM_ALLOWED: "iasurvival:spinel_block"
-  TURQUOISE_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ขุด Turquoise"
-    TYPE: "MINING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iasurvival:turquoise_ore"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 10
-        ITEM_ALLOWED: "iasurvival:cassiterite_ore"
-      2:
-        LEVEL: 20
-        ITEM_ALLOWED: "iasurvival:dark_amethyst_ore"
-  TOMATO_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ปลูก Tomato"
-    TYPE: "PLANTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iasurvival:tomato_seeds"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 4
-        ITEM_ALLOWED: "iasurvival:garlic_seeds"
-      2:
-        LEVEL: 5
-        ITEM_ALLOWED: "iasurvival:lettuce_seeds"
-        CMDS:
-          - 'say %player% ได้ถึงเลเวล %level% ในการปลูกผักแล้ว'
-  DIAMOND_HAMMER_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "คราฟ Diamond Hammer"
-    TYPE: "CRAFTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "iasurvival:diamond_hammer"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 4
-        ITEM_ALLOWED: "iaalchemy:demoniac_pickaxe"
-      2:
-        LEVEL: 6
-        ITEM_ALLOWED: "iaalchemy:demoniac_hammer"
-        CMDS:
-          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
-  OAK_BUTTON_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "คราฟ Oak Button"
-    TYPE: "CRAFTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "OAK_BUTTON"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 4
-        ITEM_ALLOWED: "STONE_BUTTON"
-      2:
-        LEVEL: 6
-        ITEM_ALLOWED: "BIRCH_BUTTON"
-        CMDS:
-          - 'say %player% ได้ถึงเลเวล %level% ในการคราฟ diamond hammer แล้ว!'
-  STONE_BUTTON_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "คราฟ Stone Button"
-    TYPE: "CRAFTING"
-    SOUND_FAIL: "BLOCK_ANVIL_FALL"
-    BEGIN_CUSTOM_ITEM: "STONE_BUTTON"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 2
-        ITEM_ALLOWED: "SPRUCE_BUTTON"
-  CHICKEN_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ล่า Chicken"
-    TYPE: "HUNTING"
-    BEGIN_CUSTOM_ITEM: "CHICKEN"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 3
-        CHANCE: 50
-        RARITY: "&1Extra"
-        ITEM_ALLOWED: "CAKE"
-      2:
-        LEVEL: 4
-        CHANCE: 50
-        RARITY: "&5Rare"
-        ITEM_ALLOWED: "DIRT"
-  FISH_COD_LEVEL: #Used as level name on data
-    DISPLAY_NAME: "ตกปลา Cod"
-    TYPE: "FISHING"
-    BEGIN_CUSTOM_ITEM: "COD"
-    EXP_GAIN:
-      MIN: 10
-      MAX: 20
-    REQUIREMENT:
-      1:
-        LEVEL: 2
-        CHANCE: 50
-        RARITY: "&1Extra"
-        ITEM_ALLOWED: "iasurvival:green_sunfish"
-      2:
-        LEVEL: 6
-        CHANCE: 3
-        RARITY: "&5Rare"
-        ITEM_ALLOWED: "iasurvival:blue_parrotfish"
+MESSAGE:
+  REQUIRED_MORE_LEVEL: '&cคุณต้องมีเลเวล &4{1}&c อย่างน้อย &4{2} เพื่อ{3}สื่งนี้ได้ &7(เลเวลของคุณคือ {4})' #To fix add {เพื้อคราฟ}
+## {1} = DISPLAY_NAME, {2} = requiredLevel, {3} = currentLevel
+  EARN_XP: "&aคุณได้รับ &2{1} xp &aจากการ &2{2} &7(Current XP: {3}/{4} xp | Current Level: {5})"
+## {1} = receivedXP, {2} = DISPLAY_NAME, {3} = currentXP, {4} maxXP, {5} currentLevel
+  LEVEL_UP: "&7&m----- &6Level Up &7&m-----&r\n
+  &7ยินดีด้วย เลเวล &5{1} &7ของคุณได้เพิ่มขึ้น\n
+  &7จาก &6{2} &7-> &c{3}\n
+  &7&m-------------------"
+## {1} = DISPLAY_NAME, {2} = oldLevel, {3} = newLevel
+  ITEM_DROP: "{1} Drop! &eคุณได้รับ {2} &7จากการ {3} &7(โอกาส &b{5}%&7)"
+CONFIG:
+  HIGHEST_LEVEL: 100
+  MAX_LV:
+    CRAFTS:
+      X: 0.3
+      Y: 2
+    PLANTS:
+      X: 0.3
+      Y: 2
+    FISHS:
+      X: 0.3
+      Y: 2
+    HUNTS:
+      X: 0.3
+      Y: 2
+    MINES:
+      X: 0.3
+      Y: 2

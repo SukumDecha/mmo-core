@@ -41,6 +41,27 @@ public class CropsListener implements Listener {
 //   }
 
     @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Player player = e.getPlayer();
+            CustomCrop customCrop = CustomCrop.byAlreadyPlaced(e.getClickedBlock());
+            if (customCrop != null && customCrop.isFullyGrown()) {
+                User user = User.getByUuid(player.getUniqueId());
+
+                //prevent player from breaking block above their levels
+                if (!CropsUtils.canGrowSeeds(user, player, customCrop.getSeed().getNamespacedID())) {
+                    e.setCancelled(true);
+                    return;
+                }
+
+                CropsUtils.handleCrops(player, user, customCrop.getSeed().getNamespacedID());
+                return;
+
+            }
+        }
+    }
+
+    @EventHandler
     public void onBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
         CustomCrop customCrop = CustomCrop.byAlreadyPlaced(e.getBlock());

@@ -1,0 +1,18 @@
+MMOCORE:
+  TOMATO_LEVEL: #Used as level name on data
+    DISPLAY_NAME: "ปลูก Tomato"
+    TYPE: "PLANTING"
+    SOUND_FAIL: "BLOCK_ANVIL_FALL"
+    BEGIN_CUSTOM_ITEM: "iasurvival:tomato_seeds"
+    EXP_GAIN:
+      MIN: 10
+      MAX: 20
+    REQUIREMENT:
+      1:
+        LEVEL: 4
+        ITEM_ALLOWED: "iasurvival:garlic_seeds"
+      2:
+        LEVEL: 5
+        ITEM_ALLOWED: "iasurvival:lettuce_seeds"
+        CMDS:
+          - 'say %player% ได้ถึงเลเวล %level% ในการปลูกผักแล้ว'

@@ -18,7 +18,7 @@ public enum Msg {
 
 
     public String format(Object ...objects) {
-        return new MessageFormat(MmoCore.getInstance().getMessageFile().getString(path)).format(objects);
+        return new MessageFormat( MmoCore.getInstance().getConfigFile().getString("MESSAGE." + path)).format(objects);
     }
 
     public void sendMessage(Player player, Object ...objects) {

@@ -2,6 +2,7 @@ package me.louderdev.mmo.level;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.louderdev.mmo.MmoCore;
 import me.louderdev.mmo.utils.Msg;
 import me.louderdev.mmo.utils.ServerUtil;
@@ -13,10 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
@@ -29,9 +27,14 @@ public class Level {
     private ActionType actionType; //Action type of this level
     private List<LevelProps> levelProps; //levelProps
     private Map<String, String> fromOthers;
+
+    private double x, y;
     @Getter private static List<Level> allLevels = new ArrayList<>();;
 
     @Getter private static Map<String, String> duplicateLevel = new HashMap<>();
+
+    private static final List<ConfigFile> allTypes = Arrays.asList();
+    private static int maxLevel;
 
     public Level(String keyName, FileConfiguration configuration) {
         this.keyName = keyName;
@@ -56,38 +59,46 @@ public class Level {
             this.maxGainXP = others.getMaxGainXP();
 
             this.currentLevel = 1;
-            this.currentMaxXP = 20;
+            this.currentMaxXP = 45;
+
+            this.x = others.getX();
+            this.y = others.getY();
 
             this.levelProps = others.getLevelProps();
             this.fromOthers = others.getFromOthers();
         } else {
-            throw new NullPointerException("Could not find level with that keyname (" +
+            System.out.println("Could not find level with that keyname (" +
                     otherKeyName + ")");
         }
     }
 
+    @SneakyThrows
     public static void init() {
-        ConfigFile config = MmoCore.getInstance().getConfigFile();;
-        ConfigurationSection section = config.getConfigurationSection("MMOCORE");
-
         allLevels = new ArrayList<>();
+        maxLevel = MmoCore.getInstance().getConfigFile().getInt("CONFIG.HIGHEST_LEVEL");
 
-        for(String key : section.getKeys(false)) {
+        for(ConfigFile config : MmoCore.getInstance().getLevelFiles()) {
+            //ConfigFile config = new ConfigFile(MmoCore.getInstance(), type);
+            ConfigurationSection section = config.getConfigurationSection("MMOCORE");
 
-            Level toAdd = new Level(key, config);
-            allLevels.add(toAdd);
+            for(String key : section.getKeys(false)) {
+                Level toAdd = new Level(key, config);
+                allLevels.add(toAdd);
+            }
         }
-
     }
 
     private void load(FileConfiguration c) {
+        ConfigFile mainConfig = MmoCore.getInstance().getConfigFile();;
+
         System.out.println("Loading " + keyName);
         ConfigurationSection section = c.getConfigurationSection("MMOCORE." + keyName);
 
         this.displayName = section.getString("DISPLAY_NAME");
         this.beginItem = section.getString("BEGIN_CUSTOM_ITEM");
         this.actionType = ActionType.valueOf(section.getString("TYPE"));
-        this.soundFail = Sound.valueOf(section.getString("SOUND_FAIL"));
+        this.soundFail = section.getString("SOUND_FAIL")
+    == null ? Sound.UI_BUTTON_CLICK : Sound.valueOf(section.getString("SOUND_FAIL"));
 
         //Set min-max exp section
         if(section.contains("EXP_GAIN")) {
@@ -100,11 +111,13 @@ public class Level {
 
         if (section.contains("REQUIREMENT")) {
             for (String key : requiresSection.getKeys(false)) {
-                Bukkit.getConsoleSender().sendMessage("key: " + key);
+               // Bukkit.getConsoleSender().sendMessage("key: " + key);
 
                 ConfigurationSection requireSection = requiresSection.getConfigurationSection(key);
+                /*
                 Bukkit.getConsoleSender().sendMessage("Level: " + requireSection.getInt("LEVEL"));
                 Bukkit.getConsoleSender().sendMessage("ITEM_ALLOWED: " + requireSection.getInt("ITEM_ALLOWED"));
+                */
 
                 LevelProps props = new LevelProps(requireSection.getInt("LEVEL"),
                         requireSection.getString("ITEM_ALLOWED"), requireSection.getStringList("CMDS").stream().toList(),
@@ -121,6 +134,33 @@ public class Level {
             //current & owner
             fromOthers.put(beginItem, duplicateLevel.get(beginItem));
         }
+;
+        String type = "";
+        switch (actionType) {
+            case CRAFTING: {
+                type = "CRAFTS";
+                break;
+            }
+            case MINING: {
+                type = "MINES";
+                break;
+            }
+            case FISHING: {
+                type = "FISHS";
+                break;
+            }
+            case PLANTING: {
+                type = "PLANTS";
+                break;
+            }
+            case HUNTING: {
+                type = "HUNTS";
+                break;
+            }
+        }
+
+        this.x = mainConfig.getDouble("CONFIG.MAX_LV." + type + ".X");
+        this.y = mainConfig.getDouble("CONFIG.MAX_LV." + type + ".Y");
 
         System.out.println("Done loading:");
         System.out.println(this);
@@ -174,9 +214,14 @@ public class Level {
                 .filter(l -> currentLevel < l.getRequiredLevel()).findFirst().orElse(null);
     }
 
-    public void handleAddExp(Player player) {
-        int receivedXP = ThreadLocalRandom.current().nextInt(minGainXP, maxGainXP + 10);
+    public boolean isMaxLevel() {
+        return currentLevel >= maxLevel;
+    }
 
+    public void handleAddExp(Player player) {
+        if(isMaxLevel()) return;
+
+        int receivedXP = ThreadLocalRandom.current().nextInt(minGainXP, maxGainXP + 10);
         this.currentXP += receivedXP;
 
         //If not level up we gonna send receive xp message;
@@ -187,12 +232,15 @@ public class Level {
     }
 
     public boolean hasLevelUp(Player player) {
+        if(isMaxLevel()) return false;
+
         if(currentXP >= currentMaxXP) {
             while (currentXP >=  currentMaxXP) {
-                int newMaxXP = ThreadLocalRandom.current().nextInt(currentMaxXP, currentMaxXP + (currentLevel * 100));
+
+                double newMaxXP = Math.pow((currentLevel / this.x), this.y);
 
                 currentXP = currentXP - currentMaxXP;
-                currentMaxXP = newMaxXP;
+                currentMaxXP = (int) newMaxXP;
 
                 Msg.LEVEL_UP.sendMessage(player, new Object[]{
                         "",
@@ -209,6 +257,8 @@ public class Level {
     }
 
     public void handleLevelUp(Player player) {;
+        if(isMaxLevel()) return;
+
         for(LevelProps props : levelProps) {
             if(props.getRequiredLevel() == currentLevel && props.getCmds().size() > 0) {
                 TaskUtils.run(() -> {
@@ -222,7 +272,7 @@ public class Level {
         }
     }
 
-    public Level getByKeyName(String keyName) {
+    public static Level getByKeyName(String keyName) {
         for(Level level : allLevels) {
             if(level.getKeyName().equalsIgnoreCase(keyName)) {
                 return level;
@@ -231,6 +281,8 @@ public class Level {
 
         return null;
     }
+
+
 
     public LevelProps getPropByString(String allowedAsString) {
         for(LevelProps prop : levelProps) {
@@ -242,6 +294,7 @@ public class Level {
         return null;
     }
 
+
     @Override
     public String toString() {
         return "Level{" +
@@ -252,6 +305,8 @@ public class Level {
                 ", beginItem=" + beginItem +
                 ", actionType=" + actionType +
                 ", levelProps=" + levelProps +
+                ", x=" + x +
+                ", y=" + y +
                 '}';
     }
 
