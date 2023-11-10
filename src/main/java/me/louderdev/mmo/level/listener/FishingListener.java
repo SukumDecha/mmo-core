@@ -24,14 +24,17 @@ public class FishingListener implements Listener {
                 Item caught = (Item) event.getCaught();
 
                 CustomStack customStack = CustomStack.byItemStack(caught.getItemStack());
-                Player player = event.getPlayer();
-                User user = User.getByUuid(player.getUniqueId());
+                User user = User.getByUuid(event.getPlayer().getUniqueId());
 
-                if(!FishUtils.canFish(user, player, customStack == null ?
-                        caught.getItemStack().getType().name() : customStack.getNamespacedID())) {
+                String name = customStack == null ?
+                        caught.getItemStack().getType().name() : customStack.getNamespacedID();
+                if(!FishUtils.canFish(user, event.getPlayer(), name)) {
                     caught.getItemStack().setType(Material.AIR);
                     event.setCancelled(true);
+                    return;
                 }
+
+                FishUtils.handleFishing(event.getPlayer(), user, name);
             } catch (Exception e) {}
         }
     }

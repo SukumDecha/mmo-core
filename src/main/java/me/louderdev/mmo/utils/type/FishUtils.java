@@ -12,7 +12,23 @@ import java.util.List;
 public class FishUtils {
 
 
-    //Handler add exp when mining
+    //Handler add exp when fishing
+    public static void handleFishing(Player player, User user, String nameSpacedId) {
+        Level lastestLevel = user.getLastestLevel();
+
+        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.FISHING && handleAddExp(player, user, lastestLevel, nameSpacedId)) return;
+
+        List<Level> fishingLevels = user.getLevelByAction(ActionType.FISHING);
+
+        for(Level level : fishingLevels) {
+            //no need to loop all levels;
+            if(handleAddExp(player, user, level, nameSpacedId)) {
+                user.setLastestLevel(level);
+                //remove return for multiple level support
+                return;
+            }
+        }
+    }
 
     public static boolean canFish(User user, Player player, String nameSpacedId) {
         if(player.isOp()) return true;
