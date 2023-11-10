@@ -25,6 +25,7 @@ public class CropsUtils {
             //no need to loop all levels;
             if(handleAddExp(player, user, level, nameSpacedId)) {
                 user.setLastestLevel(level);
+
                 //remove return for multiple level support
                 return;
             }

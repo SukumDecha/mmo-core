@@ -17,8 +17,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class FishingListener implements Listener {
 
-    private final MmoCore plugin = MmoCore.getInstance();
-
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if(event.getCaught() != null) {
@@ -28,23 +26,14 @@ public class FishingListener implements Listener {
                 CustomStack customStack = CustomStack.byItemStack(caught.getItemStack());
                 Player player = event.getPlayer();
                 User user = User.getByUuid(player.getUniqueId());
-                FishUtils.handleCaught(player, user, customStack == null ?
-                        caught.getItemStack().getType().name() : customStack.getNamespacedID());
 
+                if(!FishUtils.canFish(user, player, customStack == null ?
+                        caught.getItemStack().getType().name() : customStack.getNamespacedID())) {
+                    caught.getItemStack().setType(Material.AIR);
+                    event.setCancelled(true);
+                }
             } catch (Exception e) {}
         }
     }
 
-    /*
-    @EventHandler
-    public void onPickup(PlayerPickupItemEvent event) {
-        Item item = event.getItem();
-        if(!item.hasMetadata("fishing")) return;
-        if(!item.getMetadata("fishing").get(0).equals(event.getPlayer()
-                .getUniqueId().toString())) {
-            event.setCancelled(true);
-        }
-    }
-
-     */
 }
