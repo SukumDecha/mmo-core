@@ -1,4 +1,4 @@
-package me.louderdev.mmo.level;
+package me.louderdev.mmo.level.props;
 
 import lombok.Getter;
 
@@ -8,8 +8,8 @@ import java.util.List;
 @Getter
 public class RewardProps {
 
-    private double requiredLevel;
-    private List<String> rewardCmds;
+    private final double requiredLevel;
+    private final List<String> rewardCmds;
 
     public RewardProps(double requiredLevel,  List<String> rewardCmds) {
         this.requiredLevel = requiredLevel;

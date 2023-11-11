@@ -7,7 +7,7 @@ import me.louderdev.mmo.level.Level;
 import me.louderdev.mmo.level.listener.*;
 import me.louderdev.mmo.task.UserCachedTask;
 import me.louderdev.mmo.user.User;
-import me.louderdev.mmo.user.UserListener;
+import me.louderdev.mmo.user.listener.UserListener;
 
 import me.louderdev.mmo.utils.file.ConfigFile;
 import org.bukkit.Bukkit;

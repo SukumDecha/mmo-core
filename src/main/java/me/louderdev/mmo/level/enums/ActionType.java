@@ -1,4 +1,4 @@
-package me.louderdev.mmo.level;
+package me.louderdev.mmo.level.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

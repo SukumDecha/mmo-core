@@ -1,8 +1,8 @@
 package me.louderdev.mmo.utils.type;
 
-import me.louderdev.mmo.level.ActionType;
+import me.louderdev.mmo.level.enums.ActionType;
 import me.louderdev.mmo.level.Level;
-import me.louderdev.mmo.level.LevelProps;
+import me.louderdev.mmo.level.props.LevelProps;
 
 import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.Msg;
@@ -42,9 +42,9 @@ public class MiningUtils {
                     .filter(l -> l.getAllowedAsString().equalsIgnoreCase(nameSpacedId)).findFirst().orElse(null);
 
             if(notAllowedProps != null) {
-                Msg.REQUIRED_MORE_LEVEL.sendMessage(player, new Object[]{ "",
+                Msg.REQUIRED_MORE_LEVEL.sendMessage(player, "",
                         level.getDisplayName(), level.getActionType().getName(), notAllowedProps.getRequiredLevel(), level.getCurrentLevel()
-                });
+                );
 
                 player.playSound(player.getLocation(), level.getSoundFail(), 0.5f, 0.5f);
                 return false;
@@ -77,7 +77,7 @@ public class MiningUtils {
             if(other.getCurrentLevel() < other.getPropByString(nameSpacedId).getRequiredLevel() ) {
                 return false;
             } else {
-                level.handleAddExp(player);
+                level.addXp(player);
                 return true;
             }
 
@@ -87,7 +87,7 @@ public class MiningUtils {
             return false;
         }
 
-        level.handleAddExp(player);
+        level.addXp(player);
         return true;
     }
 }

@@ -1,9 +1,9 @@
 package me.louderdev.mmo.utils.type;
 
 import dev.lone.itemsadder.api.CustomStack;
-import me.louderdev.mmo.level.ActionType;
+import me.louderdev.mmo.level.enums.ActionType;
 import me.louderdev.mmo.level.Level;
-import me.louderdev.mmo.level.LevelProps;
+import me.louderdev.mmo.level.props.LevelProps;
 import me.louderdev.mmo.user.User;
 import me.louderdev.mmo.utils.Msg;
 import org.bukkit.Location;
@@ -74,7 +74,7 @@ public class HuntingUtils {
             if(other.getCurrentLevel() < other.getPropByString(nameSpacedId).getRequiredLevel() ) {
                 return false;
             } else {
-                level.handleAddExp(player);
+                level.addXp(player);
                 return true;
             }
 
@@ -84,7 +84,7 @@ public class HuntingUtils {
             return false;
         }
 
-        level.handleAddExp(player);
+        level.addXp(player);
         return true;
     }
 }

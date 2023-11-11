@@ -3,7 +3,7 @@ package me.louderdev.mmo.user;
 import lombok.Getter;
 import lombok.Setter;
 import me.louderdev.mmo.MmoCore;
-import me.louderdev.mmo.level.ActionType;
+import me.louderdev.mmo.level.enums.ActionType;
 import me.louderdev.mmo.level.Level;
 import me.louderdev.mmo.utils.TaskUtils;
 import me.louderdev.mmo.utils.file.ConfigFile;
@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter @Setter
 public class User {
@@ -55,14 +56,12 @@ public class User {
             System.out.println("Loading User");
 
             for (String key : keySection.getKeys(false)) {
-                System.out.println("Key: " + key);
-                ConfigurationSection section = keySection.getConfigurationSection(key);
-
                 if(Level.getByKeyName(key) == null) {
-                    data.set(section.getCurrentPath(), null);
+                    data.set(key, null);
                     continue;
                 }
 
+                ConfigurationSection section = keySection.getConfigurationSection(key);
                 Level level = new Level(key);
 
                 level.setCurrentLevel(section.getInt("CURRENT_LEVEL"));
@@ -94,9 +93,7 @@ public class User {
         data.reload();
     }
     public void saveAsync() {
-        TaskUtils.runAsync(() -> {
-            save();
-        });
+        TaskUtils.runAsync(() -> save());
     }
 
     /* Fill the other new levels to player */
@@ -131,15 +128,7 @@ public class User {
     }
 
     public List<Level> getLevelByAction(ActionType type) {
-        List<Level> toReturn = new ArrayList<>();
-
-        for(Level level : allLevels) {
-            if(level.getActionType() == type) {
-                toReturn.add(level);
-            }
-        }
-
-        return toReturn;
+        return allLevels.stream().filter(level -> level.getActionType() == type).collect(Collectors.toList());
     }
 
     public Level getLevelByName(String keyName) {

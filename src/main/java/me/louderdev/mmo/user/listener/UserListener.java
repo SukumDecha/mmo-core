@@ -1,5 +1,6 @@
-package me.louderdev.mmo.user;
+package me.louderdev.mmo.user.listener;
 
+import me.louderdev.mmo.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

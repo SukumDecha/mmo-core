@@ -1,4 +1,4 @@
-package me.louderdev.mmo.level;
+package me.louderdev.mmo.level.props;
 
 import dev.lone.itemsadder.api.CustomCrop;
 
@@ -10,10 +10,10 @@ import java.util.List;
 @Getter
 public class LevelProps {
 
-    private int chance;
-    private double requiredLevel;
-    private String allowedAsString, rarity;
-    private List<String> cmds;
+    private final int chance;
+    private final double requiredLevel;
+    private final String allowedAsString, rarity;
+    private final List<String> cmds;
 
     public LevelProps(double requiredLevel, String allowedAsString, List<String> cmds, int chance
     , String rarity) {

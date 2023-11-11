@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.louderdev.mmo.MmoCore;
+import me.louderdev.mmo.level.enums.ActionType;
+import me.louderdev.mmo.level.props.LevelProps;
+import me.louderdev.mmo.level.props.RewardProps;
 import me.louderdev.mmo.utils.Msg;
 import me.louderdev.mmo.utils.ServerUtil;
 import me.louderdev.mmo.utils.TaskUtils;
 import me.louderdev.mmo.utils.file.ConfigFile;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,7 +31,7 @@ public class Level {
     private Map<String, String> fromOthers;
 
     private double x, y;
-    @Getter private static List<Level> allLevels = new ArrayList<>();;
+    @Getter private static List<Level> allLevels = new ArrayList<>();
 
     @Getter private static Map<String, String> duplicateLevel = new HashMap<>();
 
@@ -90,7 +92,7 @@ public class Level {
     }
 
     private void load(FileConfiguration c) {
-        ConfigFile mainConfig = MmoCore.getInstance().getConfigFile();;
+        ConfigFile mainConfig = MmoCore.getInstance().getConfigFile();
 
         System.out.println("Loading " + keyName);
         ConfigurationSection section = c.getConfigurationSection("MMOCORE." + keyName);
@@ -98,8 +100,7 @@ public class Level {
         this.displayName = section.getString("DISPLAY_NAME");
         this.beginItem = section.getString("BEGIN_CUSTOM_ITEM");
         this.actionType = ActionType.valueOf(section.getString("TYPE"));
-        this.soundFail = section.getString("SOUND_FAIL")
-    == null ? Sound.UI_BUTTON_CLICK : Sound.valueOf(section.getString("SOUND_FAIL"));
+        this.soundFail = section.getString("SOUND_FAIL") == null ? Sound.UI_BUTTON_CLICK : Sound.valueOf(section.getString("SOUND_FAIL"));
 
         //Set min-max exp section
         if(section.contains("EXP_GAIN")) {
@@ -170,68 +171,32 @@ public class Level {
 
         this.x = mainConfig.getDouble("CONFIG.MAX_LV." + type + ".X");
         this.y = mainConfig.getDouble("CONFIG.MAX_LV." + type + ".Y");
-
         System.out.println("Done loading:");
-        //System.out.println(this);
     }
 
-    private void save() {
-       ConfigurationSection section = MmoCore.getInstance().getConfigFile().getConfigurationSection("MMOCORE");
-
-        for(Level level : getAllLevels()) {
-            ConfigurationSection levelSection = section.createSection(level.getKeyName());
-
-            levelSection.set("DISPLAY_NAME", level.getDisplayName());
-            levelSection.set("TYPE", level.getActionType().name());
-            levelSection.set("SOUND_FAIL", level.getSoundFail().name());
-            levelSection.set("BEGIN_CUSTOM_ITEM", level.getBeginItem());
-
-            ConfigurationSection expSection = levelSection.createSection("EXP_GAIN");
-            expSection.set("MIN", level.getMinGainXP());
-            expSection.set("MAX", level.getMaxGainXP());
-
-            ConfigurationSection requiresSection = levelSection.createSection("REQUIREMENT");
-            for (int i = 0; i < level.getLevelProps().size(); i++) {
-                Bukkit.getConsoleSender().sendMessage("I: " + i);
-
-                LevelProps props = level.getLevelProps().get(i);
-
-                ConfigurationSection requireSection = requiresSection.createSection(String.valueOf(i));
-
-                requireSection.set("LEVEL", props);
-                requireSection.set("ITEM_ALLOWED", props.getAllowedAsString());
-            }
-        }
-    }
-
-    public LevelProps filterByCurrentLevel(double currentLevel) {
-        return getLevelProps().stream()
-                .filter(l -> currentLevel < l.getRequiredLevel()).findFirst().orElse(null);
-    }
 
     public boolean isMaxLevel() {
         return currentLevel >= maxLevel;
     }
 
-    public void handleAddExp(Player player) {
+    public void addXp(Player player) {
         if(isMaxLevel()) return;
 
         int receivedXP = ThreadLocalRandom.current().nextInt(minGainXP, maxGainXP + 10);
         this.currentXP += receivedXP;
 
         //If not level up we gonna send receive xp message;
-        if(!hasLevelUp(player)) {
+        if(!canLevelUp(player)) {
             Msg.EARN_XP.sendMessage(player, new Object[]{ "", receivedXP , displayName,
                     currentXP, currentMaxXP, currentLevel});
         }
     }
 
-    public boolean hasLevelUp(Player player) {
+    public boolean canLevelUp(Player player) {
         if(isMaxLevel()) return false;
 
         if(currentXP >= currentMaxXP) {
             while (currentXP >=  currentMaxXP) {
-
                 double newMaxXP = Math.pow((currentLevel / this.x), this.y);
 
                 currentXP = currentXP - currentMaxXP;
@@ -243,7 +208,7 @@ public class Level {
                         currentLevel, ++currentLevel
                 });
 
-                handleLevelUp(player);
+                levelUp(player);
             }
             return true;
         }
@@ -251,7 +216,7 @@ public class Level {
         return false;
     }
 
-    public void handleLevelUp(Player player) {;
+    public void levelUp(Player player) {;
         if(isMaxLevel()) return;
 
         if(getRewardProps().size() > 0) {
@@ -294,13 +259,9 @@ public class Level {
 
 
     public LevelProps getPropByString(String allowedAsString) {
-        for(LevelProps prop : levelProps) {
-            if(prop.getAllowedAsString().equals(allowedAsString)) {
-                return prop;
-            }
-        }
-
-        return null;
+        return levelProps.stream()
+                .filter(prop -> prop.getAllowedAsString().equals(allowedAsString))
+                .findFirst().orElse(null);
     }
 
 
@@ -333,7 +294,6 @@ public class Level {
                 .append("    &5current XP: &d").append(currentXP)
                 .append("    &5current MaxXP: &d").append(currentMaxXP)
                 .append("  &5Level Props: &r\n")
-                .append(levelProps.toString())
                 .toString();
     }
 
