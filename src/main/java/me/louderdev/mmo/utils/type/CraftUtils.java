@@ -53,8 +53,6 @@ public class CraftUtils {
 
         return true;
     }
-
-
     public static boolean handleAddExp(Player player, User user, Level level, String nameSpacedId) {
         if(level.getFromOthers().containsKey(nameSpacedId)) {
             Level other = user.getLevelByName(level.getFromOthers().get(nameSpacedId));

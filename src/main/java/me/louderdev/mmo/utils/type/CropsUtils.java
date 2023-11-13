@@ -12,12 +12,13 @@ import java.util.List;
 public class CropsUtils {
 
 
-
-    //Handler add exp when mining
     public static void handleCrops(Player player, User user, String nameSpacedId) {
         Level lastestLevel = user.getLastestLevel();
 
-        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.PLANTING && handleAddExp(player, user, lastestLevel, nameSpacedId)) return;
+        if(lastestLevel != null && lastestLevel.getActionType() == ActionType.PLANTING &&
+                handleAddExp(player, user, lastestLevel, nameSpacedId)) {
+            return;
+        }
 
         List<Level> cropsLevels = user.getLevelByAction(ActionType.PLANTING);
 
